@@ -643,14 +643,26 @@ EB_ERRORTYPE SignalDerivationMultiProcessesOq(
 		}
     }
 	else {
+
 		pictureControlSetPtr->cu8x8Mode = CU_8x8_MODE_1;
     }
-   
+#if M12_SQ_16x16
+    pictureControlSetPtr->cu16x16Mode = (pictureControlSetPtr->temporalLayerIndex == 0) ? CU_16x16_MODE_0 : CU_16x16_MODE_1;
+#else
     // CU_16x16 Search Mode
 	  pictureControlSetPtr->cu16x16Mode = CU_16x16_MODE_0;
-
+#endif
+#if M11_SKIP_8x8
+      if (sequenceControlSetPtr->inputResolution == INPUT_SIZE_4K_RANGE) {
+          pictureControlSetPtr->skipOis8x8 = (pictureControlSetPtr->sliceType != EB_I_PICTURE) ? EB_TRUE : EB_FALSE;
+      }
+      else {
+          pictureControlSetPtr->skipOis8x8 = EB_FALSE;
+      }
+#else
     // Set Skip OIS 8x8 Flag
     pictureControlSetPtr->skipOis8x8 = EB_FALSE;
+#endif
 
     return return_error;
 }

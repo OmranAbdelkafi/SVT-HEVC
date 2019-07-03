@@ -2772,6 +2772,9 @@ static EB_ERRORTYPE SignalDerivationEncDecKernelOq(
 		}
 	}
     else {
+#if M11_SQ_CHROMA
+        contextPtr->mdContext->chromaLevel = 1;
+#else
 		if (pictureControlSetPtr->sliceType == EB_I_PICTURE) {
 			contextPtr->mdContext->chromaLevel = 1;
 		}
@@ -2789,6 +2792,7 @@ static EB_ERRORTYPE SignalDerivationEncDecKernelOq(
 		else {
 			contextPtr->mdContext->chromaLevel = 1;
 		}
+#endif
     }
 
     // Set Coeff Cabac Update Flag
@@ -2827,9 +2831,12 @@ static EB_ERRORTYPE SignalDerivationEncDecKernelOq(
     else {
         contextPtr->mdContext->intra8x8RestrictionInterSlice = EB_TRUE;
     }
-
+#if M11_SQ_AMVP
+    contextPtr->mdContext->generateAmvpTableMd = EB_FALSE;
+#else
     // Set AMVP Generation @ MD Flag
     contextPtr->mdContext->generateAmvpTableMd = EB_TRUE;
+#endif
 
     // Set Cbf based Full-Loop Escape Flag
     if (pictureControlSetPtr->encMode <= ENC_MODE_1) {
@@ -2887,11 +2894,18 @@ static EB_ERRORTYPE SignalDerivationEncDecKernelOq(
     contextPtr->pmMethod = 0;
 
     // Set Fast EL Flag
+#if M11_SQ_FAST_EL
+    contextPtr->fastEl = EB_TRUE;
+#else
     contextPtr->fastEl = EB_FALSE;
+#endif
 	contextPtr->yBitsThsld = YBITS_THSHLD_1(0);
-    
+#if M11_SQ_SAO
+    contextPtr->saoMode = 0;
+#else
     // Set SAO Mode
 	contextPtr->saoMode = 1;
+#endif
     
     // Set Exit Partitioning Flag 
     if (pictureControlSetPtr->encMode >= ENC_MODE_10) {
@@ -2952,7 +2966,7 @@ static EB_ERRORTYPE SignalDerivationEncDecKernelOq(
 		}
     }
 
-    // Set PF @ MD Level
+    // Set PF @ MD Level //omran
     // Level    Settings 
     // 0        OFF
     // 1        N2    
@@ -3154,8 +3168,26 @@ static EB_ERRORTYPE SignalDerivationEncDecKernelOq(
 			contextPtr->mdContext->nflLevelMd = 5;
 		}
     }
+    
+
+
+    
     else {
+#if M11_SQ_NFL
+        if (pictureControlSetPtr->sliceType == EB_I_PICTURE) {
+            if (sequenceControlSetPtr->inputResolution <= INPUT_SIZE_1080p_RANGE) {
+                contextPtr->mdContext->nflLevelMd = 1;
+            }
+            else {
+                contextPtr->mdContext->nflLevelMd = 0;
+            }
+        }
+        else {
+            contextPtr->mdContext->nflLevelMd = 3;
+        }
+#else
 		contextPtr->mdContext->nflLevelMd = 6;
+#endif
     }
 
     // NFL Level Pillar/8x8 Refinement         Settings
@@ -3223,7 +3255,16 @@ static EB_ERRORTYPE SignalDerivationEncDecKernelOq(
 		}
     }
     else {
+#if M11_SQ_NFL
+        if (pictureControlSetPtr->sliceType == EB_I_PICTURE) {
+            contextPtr->mdContext->nflLevelPillar8x8ref = 4;
+        }
+        else {
+            contextPtr->mdContext->nflLevelPillar8x8ref = 6;
+        }
+#else
 		contextPtr->mdContext->nflLevelPillar8x8ref = 9;
+#endif
 
     }
 
@@ -3285,7 +3326,11 @@ static EB_ERRORTYPE SignalDerivationEncDecKernelOq(
 		}
     }
     else {
+#if M11_SQ_NFL
+        contextPtr->mdContext->nflLevelMvMerge64x64ref = 5;
+#else
 		contextPtr->mdContext->nflLevelMvMerge64x64ref = 8;
+#endif
 
     }
 

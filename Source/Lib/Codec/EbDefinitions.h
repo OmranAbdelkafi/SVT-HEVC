@@ -16,6 +16,7 @@ extern "C" {
 // Internal Marcos
 #define NON_AVX512_SUPPORT
 
+
 #ifdef __cplusplus
 #define EB_EXTERN extern "C"
 #else
@@ -53,8 +54,15 @@ extern "C" {
     typedef int errno_t;
 #endif  /* _ERRNO_T_DEFINED */
 
-
-
+#define M11_SQ_NFL              0   //4k and 1080p
+#define M11_SQ_ADP              0   //4k and 1080p
+#define M11_SKIP_8x8            0   //4K only
+#define M12_SQ_16x16            0   //4k and 1080p
+#define M12_SQ_ME               0   //4k only
+#define M11_SQ_CHROMA           0   //4k and 1080p
+#define M11_SQ_AMVP             0   //4k and 1080p
+#define M11_SQ_FAST_EL          0   //4k and 1080p
+#define M11_SQ_SAO              0   //4k and 1080p
 
 //Maximum 8192x4320
 #define EB_TILE_COLUMN_MAX_COUNT                    20u
@@ -2045,11 +2053,19 @@ static const EB_U8 SearchAreaWidthOq[5][MAX_SUPPORTED_MODES] = {
 };
 
 static const EB_U8 SearchAreaHeightOq[5][MAX_SUPPORTED_MODES] = {
+#if M12_SQ_ME
+    {  64,   64,   64,   64,   16,    9,    9,    9,    9,    7,    7,    7,    7 },
+    {  64,   64,   64,   64,   16,   13,   13,    9,    9,    7,    7,    7,    7 },
+    {  64,   64,   64,   64,   16,    9,    9,    7,    7,    7,    7,    7,    7 },
+    {  64,   64,   64,   64,   16,   13,   13,    9,    9,    7,    7,    7,    7 },
+    {  64,   64,   64,   64,    9,    9,    9,    9,    7,    7,    7,    7,    5 }
+#else
 	{  64,   64,   64,   64,   16,    9,    9,    9,    9,    7,    7,    7,    7 },
 	{  64,   64,   64,   64,   16,   13,   13,    9,    9,    7,    7,    7,    7 },
 	{  64,   64,   64,   64,   16,    9,    9,    7,    7,    7,    7,    7,    7 },
 	{  64,   64,   64,   64,   16,   13,   13,    9,    9,    7,    7,    7,    7 },
 	{  64,   64,   64,   64,    9,    9,    9,    9,    7,    7,    7,    7,    7 }
+#endif
 };
 /******************************************************************************
                             ME/HME settings SQ

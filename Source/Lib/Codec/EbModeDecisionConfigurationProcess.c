@@ -1494,6 +1494,44 @@ void SetTargetBudgetOq(
 		}
 	}
     else {
+#if M11_SQ_ADP
+        if (sequenceControlSetPtr->inputResolution <= INPUT_SIZE_1080i_RANGE) {
+            if (pictureControlSetPtr->temporalLayerIndex == 0)
+                budget = pictureControlSetPtr->lcuTotalCount * U_127;
+            else if (pictureControlSetPtr->ParentPcsPtr->isUsedAsReferenceFlag == EB_TRUE)
+                budget = pictureControlSetPtr->lcuTotalCount * OPEN_LOOP_COST;
+            else
+                budget = pictureControlSetPtr->lcuTotalCount * U_101;
+        }
+        else if (sequenceControlSetPtr->inputResolution <= INPUT_SIZE_1080p_RANGE) {
+
+            if (pictureControlSetPtr->ParentPcsPtr->temporalLayerIndex == 0)
+                budget = pictureControlSetPtr->ParentPcsPtr->lcuTotalCount * BDP_COST;
+            else if (pictureControlSetPtr->ParentPcsPtr->isUsedAsReferenceFlag == EB_TRUE)
+                budget = pictureControlSetPtr->lcuTotalCount * OPEN_LOOP_COST;
+            else
+                budget = pictureControlSetPtr->lcuTotalCount * U_104;
+
+        }
+        else {
+            if (pictureControlSetPtr->ParentPcsPtr->temporalLayerIndex == 0)
+                budget = (contextPtr->adpDepthSensitivePictureClass == DEPTH_SENSITIVE_PIC_CLASS_2) ?
+                pictureControlSetPtr->ParentPcsPtr->lcuTotalCount * U_127 :
+                (contextPtr->adpDepthSensitivePictureClass == DEPTH_SENSITIVE_PIC_CLASS_1) ?
+                pictureControlSetPtr->ParentPcsPtr->lcuTotalCount * U_125 :
+                pictureControlSetPtr->ParentPcsPtr->lcuTotalCount * U_121;
+            else if (pictureControlSetPtr->ParentPcsPtr->isUsedAsReferenceFlag)
+                budget = (contextPtr->adpDepthSensitivePictureClass == DEPTH_SENSITIVE_PIC_CLASS_2) ?
+                pictureControlSetPtr->ParentPcsPtr->lcuTotalCount * OPEN_LOOP_COST :
+                (contextPtr->adpDepthSensitivePictureClass == DEPTH_SENSITIVE_PIC_CLASS_1) ?
+                pictureControlSetPtr->ParentPcsPtr->lcuTotalCount * U_104 :
+                pictureControlSetPtr->ParentPcsPtr->lcuTotalCount * U_103;
+            else
+                budget = (contextPtr->adpDepthSensitivePictureClass == DEPTH_SENSITIVE_PIC_CLASS_2) ?
+                pictureControlSetPtr->ParentPcsPtr->lcuTotalCount * U_104 :
+                pictureControlSetPtr->ParentPcsPtr->lcuTotalCount * U_103;
+        }
+#else
 		if (pictureControlSetPtr->ParentPcsPtr->temporalLayerIndex == 0)
 			budget = (contextPtr->adpDepthSensitivePictureClass == DEPTH_SENSITIVE_PIC_CLASS_2) ?
 			pictureControlSetPtr->ParentPcsPtr->lcuTotalCount * U_127 :
@@ -1510,6 +1548,7 @@ void SetTargetBudgetOq(
 			budget = (contextPtr->adpDepthSensitivePictureClass == DEPTH_SENSITIVE_PIC_CLASS_2) ?
 			pictureControlSetPtr->ParentPcsPtr->lcuTotalCount * 100 :
 			pictureControlSetPtr->ParentPcsPtr->lcuTotalCount * 100;
+#endif
     }
 
 	contextPtr->budget = budget;
