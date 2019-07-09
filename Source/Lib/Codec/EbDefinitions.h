@@ -54,15 +54,24 @@ extern "C" {
     typedef int errno_t;
 #endif  /* _ERRNO_T_DEFINED */
 
+
+
+#define M12_SQ_ME               1   //4k only
+#define M11_SQ_ADP              1   //4k and 1080p
+#define M12_SQ_16x16            1   //4k and 1080p
+#define M11_SQ_CHROMA           1   //4k and 1080p
+#define M11_SQ_SAO              1   //4k and 1080p
+#define M12_SQ_SUBPEL           1
+#define SQ_PF_MD                1
+#define M12_SQ_PARTITION        1
 #define M11_SQ_NFL              0   //4k and 1080p
-#define M11_SQ_ADP              0   //4k and 1080p
 #define M11_SKIP_8x8            0   //4K only
-#define M12_SQ_16x16            0   //4k and 1080p
-#define M12_SQ_ME               0   //4k only
-#define M11_SQ_CHROMA           0   //4k and 1080p
 #define M11_SQ_AMVP             0   //4k and 1080p
 #define M11_SQ_FAST_EL          0   //4k and 1080p
-#define M11_SQ_SAO              0   //4k and 1080p
+#define SQ_CHROMA_QP_OFFSET     0
+#define SQ_OIS                  0
+#define SQ_PM                   0
+
 
 //Maximum 8192x4320
 #define EB_TILE_COLUMN_MAX_COUNT                    20u
@@ -2058,7 +2067,7 @@ static const EB_U8 SearchAreaHeightOq[5][MAX_SUPPORTED_MODES] = {
     {  64,   64,   64,   64,   16,   13,   13,    9,    9,    7,    7,    7,    7 },
     {  64,   64,   64,   64,   16,    9,    9,    7,    7,    7,    7,    7,    7 },
     {  64,   64,   64,   64,   16,   13,   13,    9,    9,    7,    7,    7,    7 },
-    {  64,   64,   64,   64,    9,    9,    9,    9,    7,    7,    7,    7,    5 }
+    {  64,   64,   64,   64,    9,    9,    9,    9,    7,    7,    5,    7,    7 }
 #else
 	{  64,   64,   64,   64,   16,    9,    9,    9,    9,    7,    7,    7,    7 },
 	{  64,   64,   64,   64,   16,   13,   13,    9,    9,    7,    7,    7,    7 },

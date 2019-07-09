@@ -671,8 +671,13 @@ EB_ERRORTYPE SignalDerivationMeKernelOq(
                 contextPtr->oisThSet = 1;  
             }
         }
+
         else {
-            contextPtr->oisThSet = 1;        
+#if SQ_OIS
+            contextPtr->oisThSet = 0;
+#else
+            contextPtr->oisThSet = 1;     
+#endif
         }
     }
     else {

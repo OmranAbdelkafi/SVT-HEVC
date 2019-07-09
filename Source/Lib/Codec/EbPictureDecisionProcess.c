@@ -372,10 +372,14 @@ EB_U8 PictureLevelSubPelSettingsOq(
     }
     else {
 		if (inputResolution >= INPUT_SIZE_4K_RANGE) {
+#if M12_SQ_SUBPEL
+            subPelMode = 0;
+#else
 			subPelMode = (temporalLayerIndex == 0) ? 1 : 0;
 		}
 		else {
 			subPelMode = isUsedAsReferenceFlag ? 1 : 0;
+#endif
 		}
     }
 
@@ -595,6 +599,20 @@ EB_ERRORTYPE SignalDerivationMultiProcessesOq(
 			pictureControlSetPtr->depthMode = PICT_FULL85_DEPTH_MODE;
 		}
 	}
+#if M12_SQ_PARTITION
+    else {
+        if (pictureControlSetPtr->sliceType == EB_I_PICTURE) {
+            if (sequenceControlSetPtr->inputResolution <= INPUT_SIZE_1080p_RANGE) {
+                pictureControlSetPtr->depthMode = PICT_FULL84_DEPTH_MODE;
+            }
+            else {
+                pictureControlSetPtr->depthMode = PICT_BDP_DEPTH_MODE;
+            }
+        }
+        else {
+            pictureControlSetPtr->depthMode = PICT_LCU_SWITCH_DEPTH_MODE;
+        }
+#else
     else {
         if (pictureControlSetPtr->sliceType == EB_I_PICTURE) {
             pictureControlSetPtr->depthMode = PICT_FULL84_DEPTH_MODE;
@@ -602,6 +620,7 @@ EB_ERRORTYPE SignalDerivationMultiProcessesOq(
         else {
             pictureControlSetPtr->depthMode = PICT_LCU_SWITCH_DEPTH_MODE;
         }
+#endif
     }
     
     // Set the default settings of  subpel

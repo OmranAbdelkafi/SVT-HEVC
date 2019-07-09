@@ -2335,7 +2335,11 @@ EB_ERRORTYPE SignalDerivationModeDecisionConfigKernelOq(
     // Derive chroma Qp Offset
     // 0 : 2 Layer1 0 OW 
     // 1 : MOD_QP_OFFSET -3
+#if SQ_CHROMA_QP_OFFSET
+    contextPtr->chromaQpOffsetLevel = 0;
+#else
     contextPtr->chromaQpOffsetLevel  = 1;
+#endif
     
     return return_error;
 }
