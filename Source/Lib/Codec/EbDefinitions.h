@@ -58,7 +58,6 @@ extern "C" {
 
 #define M12_SQ_ME               1   //4k only
 #define M11_SQ_ADP              1   //4k and 1080p
-#define M12_SQ_16x16            1   //4k and 1080p
 #define M11_SQ_CHROMA           1   //4k and 1080p
 #define M11_SQ_SAO              1   //4k and 1080p
 #define M12_SQ_SUBPEL           1
@@ -71,6 +70,7 @@ extern "C" {
 #define SQ_CHROMA_QP_OFFSET     0
 #define SQ_OIS                  0
 #define SQ_PM                   0
+#define M12_SQ_16x16            0   //4k and 1080p
 
 
 //Maximum 8192x4320
