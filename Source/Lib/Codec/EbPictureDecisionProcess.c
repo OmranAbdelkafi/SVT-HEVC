@@ -372,14 +372,16 @@ EB_U8 PictureLevelSubPelSettingsOq(
     }
     else {
 		if (inputResolution >= INPUT_SIZE_4K_RANGE) {
-#if M12_SQ_SUBPEL
-            subPelMode = 0;
-#else
-			subPelMode = (temporalLayerIndex == 0) ? 1 : 0;
+            if (encMode > ENC_MODE_10) {
+                subPelMode = 0;
+            }
+
+            else {
+            subPelMode = (temporalLayerIndex == 0) ? 1 : 0;
+            }
 		}
 		else {
 			subPelMode = isUsedAsReferenceFlag ? 1 : 0;
-#endif
 		}
     }
 
@@ -586,42 +588,40 @@ Output  : Multi-Processes signal(s)
 ******************************************************/
 EB_ERRORTYPE SignalDerivationMultiProcessesOq(
     SequenceControlSet_t        *sequenceControlSetPtr,
-    PictureParentControlSet_t   *pictureControlSetPtr ) {
+    PictureParentControlSet_t   *pictureControlSetPtr) {
 
     EB_ERRORTYPE return_error = EB_ErrorNone;
 
     // Set MD Partitioning Method
-	if (pictureControlSetPtr->encMode <= ENC_MODE_3) {
-		if (pictureControlSetPtr->sliceType == EB_I_PICTURE) {
-			pictureControlSetPtr->depthMode = PICT_FULL84_DEPTH_MODE;
-		}
-		else {
-			pictureControlSetPtr->depthMode = PICT_FULL85_DEPTH_MODE;
-		}
-	}
-#if M12_SQ_PARTITION
-    else {
+    if (pictureControlSetPtr->encMode <= ENC_MODE_3) {
         if (pictureControlSetPtr->sliceType == EB_I_PICTURE) {
-            if (sequenceControlSetPtr->inputResolution <= INPUT_SIZE_1080p_RANGE) {
-                pictureControlSetPtr->depthMode = PICT_FULL84_DEPTH_MODE;
-            }
-            else {
-                pictureControlSetPtr->depthMode = PICT_BDP_DEPTH_MODE;
-            }
+            pictureControlSetPtr->depthMode = PICT_FULL84_DEPTH_MODE;
         }
         else {
-            pictureControlSetPtr->depthMode = PICT_LCU_SWITCH_DEPTH_MODE;
+            pictureControlSetPtr->depthMode = PICT_FULL85_DEPTH_MODE;
         }
-#else
-    else {
+    }
+
+    else if (pictureControlSetPtr->encMode <= ENC_MODE_10) {
         if (pictureControlSetPtr->sliceType == EB_I_PICTURE) {
             pictureControlSetPtr->depthMode = PICT_FULL84_DEPTH_MODE;
         }
         else {
             pictureControlSetPtr->depthMode = PICT_LCU_SWITCH_DEPTH_MODE;
         }
-#endif
     }
+
+    else {
+        if (pictureControlSetPtr->sliceType == EB_I_PICTURE) {
+
+            pictureControlSetPtr->depthMode = PICT_BDP_DEPTH_MODE;
+
+        }
+        else {
+            pictureControlSetPtr->depthMode = PICT_LCU_SWITCH_DEPTH_MODE;
+        }
+    }
+    
     
     // Set the default settings of  subpel
     pictureControlSetPtr->useSubpelFlag = PictureLevelSubPelSettingsOq(

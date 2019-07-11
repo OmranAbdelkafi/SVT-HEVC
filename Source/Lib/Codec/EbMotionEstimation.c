@@ -4281,7 +4281,7 @@ EB_ERRORTYPE MotionEstimateLcu(
 		        		contextPtr->interpolatedFullStride[listIndex][0],
 		        		(EB_U32)searchAreaWidth + (MAX_LCU_SIZE - 1),
 		        		(EB_U32)searchAreaHeight + (MAX_LCU_SIZE - 1));
-
+                    
 		        	// Half-Pel Refinement [8 search positions]
 		        	HalfPelSearch_LCU(
 		        		sequenceControlSetPtr,

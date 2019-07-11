@@ -56,13 +56,7 @@ extern "C" {
 
 
 
-#define M12_SQ_ME               1   //4k only
-#define M11_SQ_ADP              1   //4k and 1080p
-#define M11_SQ_CHROMA           1   //4k and 1080p
-#define M11_SQ_SAO              1   //4k and 1080p
-#define M12_SQ_SUBPEL           1
-#define SQ_PF_MD                1
-#define M12_SQ_PARTITION        1
+
 #define M11_SQ_NFL              0   //4k and 1080p
 #define M11_SKIP_8x8            0   //4K only
 #define M11_SQ_AMVP             0   //4k and 1080p
@@ -423,7 +417,7 @@ static const EB_U32 me2Nx2NOffset[4]    = { 0, 1, 5, 21 };
 
 #define MAX_SUPPORTED_MODES_SUB1080P    10
 #define MAX_SUPPORTED_MODES_1080P       11
-#define MAX_SUPPORTED_MODES_4K_OQ       11
+#define MAX_SUPPORTED_MODES_4K_OQ       12
 #define MAX_SUPPORTED_MODES_4K_SQ       13
 
 #define SPEED_CONTROL_INIT_MOD ENC_MODE_5;
@@ -2062,19 +2056,13 @@ static const EB_U8 SearchAreaWidthOq[5][MAX_SUPPORTED_MODES] = {
 };
 
 static const EB_U8 SearchAreaHeightOq[5][MAX_SUPPORTED_MODES] = {
-#if M12_SQ_ME
+
     {  64,   64,   64,   64,   16,    9,    9,    9,    9,    7,    7,    7,    7 },
     {  64,   64,   64,   64,   16,   13,   13,    9,    9,    7,    7,    7,    7 },
     {  64,   64,   64,   64,   16,    9,    9,    7,    7,    7,    7,    7,    7 },
     {  64,   64,   64,   64,   16,   13,   13,    9,    9,    7,    7,    7,    7 },
-    {  64,   64,   64,   64,    9,    9,    9,    9,    7,    7,    5,    7,    7 }
-#else
-	{  64,   64,   64,   64,   16,    9,    9,    9,    9,    7,    7,    7,    7 },
-	{  64,   64,   64,   64,   16,   13,   13,    9,    9,    7,    7,    7,    7 },
-	{  64,   64,   64,   64,   16,    9,    9,    7,    7,    7,    7,    7,    7 },
-	{  64,   64,   64,   64,   16,   13,   13,    9,    9,    7,    7,    7,    7 },
-	{  64,   64,   64,   64,    9,    9,    9,    9,    7,    7,    7,    7,    7 }
-#endif
+    {  64,   64,   64,   64,    9,    9,    9,    9,    7,    7,    7,    5,    5 }
+
 };
 /******************************************************************************
                             ME/HME settings SQ

@@ -2287,7 +2287,7 @@ static EB_ERRORTYPE SignalDerivationEncDecKernelSq(
                 contextPtr->mdContext->pfMdLevel = 1;
             }
         }
-        else if (pictureControlSetPtr->ParentPcsPtr->encMode <= ENC_MODE_10) {
+        else if (pictureControlSetPtr->ParentPcsPtr->encMode <= ENC_MODE_11) {
             if (pictureControlSetPtr->ParentPcsPtr->isUsedAsReferenceFlag) {
                 contextPtr->mdContext->pfMdLevel = 1;
             }
@@ -2771,10 +2771,8 @@ static EB_ERRORTYPE SignalDerivationEncDecKernelOq(
 			contextPtr->mdContext->chromaLevel = 0;
 		}
 	}
-    else {
-#if M11_SQ_CHROMA
-        contextPtr->mdContext->chromaLevel = 1;
-#else
+
+    else if (pictureControlSetPtr->encMode <= ENC_MODE_10) {
 		if (pictureControlSetPtr->sliceType == EB_I_PICTURE) {
 			contextPtr->mdContext->chromaLevel = 1;
 		}
@@ -2792,7 +2790,10 @@ static EB_ERRORTYPE SignalDerivationEncDecKernelOq(
 		else {
 			contextPtr->mdContext->chromaLevel = 1;
 		}
-#endif
+
+    }
+    else {
+        contextPtr->mdContext->chromaLevel = 1;
     }
 
     // Set Coeff Cabac Update Flag
@@ -2902,12 +2903,9 @@ static EB_ERRORTYPE SignalDerivationEncDecKernelOq(
     contextPtr->fastEl = EB_FALSE;
 #endif
 	contextPtr->yBitsThsld = YBITS_THSHLD_1(0);
-#if M11_SQ_SAO
-    contextPtr->saoMode = 0;
-#else
-    // Set SAO Mode
-	contextPtr->saoMode = 1;
-#endif
+
+    contextPtr->saoMode = (pictureControlSetPtr->ParentPcsPtr->encMode <= ENC_MODE_10) ? 1: 0;
+
     
     // Set Exit Partitioning Flag 
     if (pictureControlSetPtr->encMode >= ENC_MODE_10) {
@@ -2967,61 +2965,7 @@ static EB_ERRORTYPE SignalDerivationEncDecKernelOq(
 			contextPtr->mdContext->mpmLevel = 2;
 		}
     }
-#if SQ_PF_MD
-    // Set PF @ MD Level
-       // Level    Settings 
-       // 0        OFF
-       // 1        N2    
-       // 2        M2 if 8x8 or 16x16 or Detector, N4 otherwise
-       // 3        M2 if 8x8, N4 otherwise
-    if (sequenceControlSetPtr->inputResolution == INPUT_SIZE_4K_RANGE) {
 
-        if (pictureControlSetPtr->ParentPcsPtr->encMode == ENC_MODE_0) {
-            contextPtr->mdContext->pfMdLevel = 0;
-        }
-        else if (pictureControlSetPtr->ParentPcsPtr->encMode <= ENC_MODE_6) {
-            if (pictureControlSetPtr->temporalLayerIndex == 0) {
-                contextPtr->mdContext->pfMdLevel = 0;
-            }
-            else {
-                contextPtr->mdContext->pfMdLevel = 1;
-            }
-        }
-        else if (0/*pictureControlSetPtr->ParentPcsPtr->encMode <= ENC_MODE_10*/) {
-            if (pictureControlSetPtr->ParentPcsPtr->isUsedAsReferenceFlag) {
-                contextPtr->mdContext->pfMdLevel = 1;
-            }
-            else {
-                contextPtr->mdContext->pfMdLevel = 3;
-            }
-        }
-        else {
-            if (pictureControlSetPtr->sliceType == EB_I_PICTURE) {
-                contextPtr->mdContext->pfMdLevel = 1;
-            }
-            else if (pictureControlSetPtr->ParentPcsPtr->temporalLayerIndex == 0) {
-                contextPtr->mdContext->pfMdLevel = 2;
-            }
-            else {
-                contextPtr->mdContext->pfMdLevel = 3;
-            }
-        }
-    }
-    else
-    {
-        if (pictureControlSetPtr->ParentPcsPtr->encMode <= ENC_MODE_4) {
-            contextPtr->mdContext->pfMdLevel = 0;
-        }
-        else {
-            if (pictureControlSetPtr->ParentPcsPtr->isUsedAsReferenceFlag) {
-                contextPtr->mdContext->pfMdLevel = 0;
-            }
-            else {
-                contextPtr->mdContext->pfMdLevel = 1;
-            }
-        }
-    }
-#else
     // Set PF @ MD Level //omran
     // Level    Settings 
     // 0        OFF
@@ -3062,7 +3006,7 @@ static EB_ERRORTYPE SignalDerivationEncDecKernelOq(
 			}
 		}
 	}
-    else {
+    else if (pictureControlSetPtr->encMode <= ENC_MODE_10) {
         if (pictureControlSetPtr->temporalLayerIndex == 0) {
             contextPtr->mdContext->pfMdLevel = 0;
         }
@@ -3070,7 +3014,19 @@ static EB_ERRORTYPE SignalDerivationEncDecKernelOq(
             contextPtr->mdContext->pfMdLevel = 1;
         }   
     }
-#endif
+    else
+    {
+
+        if (pictureControlSetPtr->sliceType == EB_I_PICTURE) {
+            contextPtr->mdContext->pfMdLevel = 1;
+        }
+        else if (pictureControlSetPtr->ParentPcsPtr->temporalLayerIndex == 0) {
+            contextPtr->mdContext->pfMdLevel = 2;
+        }
+        else {
+            contextPtr->mdContext->pfMdLevel = 3;
+        }
+    }
     // Set INTRA4x4 Search Level
     // Level    Settings 
     // 0        INLINE if not BDP, refinment otherwise 
